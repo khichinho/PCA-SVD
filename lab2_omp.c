@@ -189,7 +189,7 @@ void Matrix_mult(float *A, float *B, float *result, int M, int N, int K)
 void Gram_Schmidt_iteration(float *A, float *Q, float *R, int N)
 {
     for(int i=0; i < N; i++)
-    {
+        {
         if(i==0)
         {
             // calculate norm
@@ -362,6 +362,9 @@ void Gram_Schmidt_process(float *A, float *eigen_values, float *eigen_vectors, i
     }
     printf("###########################################################################\n");
 }
+
+
+
 
 
 
