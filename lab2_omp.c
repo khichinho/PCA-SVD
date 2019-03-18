@@ -84,6 +84,14 @@ void SVD(int M, int N, float* D, float** U, float** SIGMA, float** V_T)
     }
 
 
+    printf("\nEigen Values = \n");
+    for(int i = 0; i < N; i++)
+    {
+        printf("%f ", eigen_values[i][i]);
+    }
+    printf("\n\nEigen Vectors = \n");
+    Matrix_print((float *)eigen_vectors, N, N);
+
     // sigma matrix
     float sigma[N][N];
     // sigma inverse matrix
@@ -96,16 +104,19 @@ void SVD(int M, int N, float* D, float** U, float** SIGMA, float** V_T)
 
     for(int i=0; i<N; i++)
     {
-        sigma[i][i] = (sqrt(eigen_values[i][i]));
-        sigma_inverse[i][i] = 1/(sqrt(eigen_values[i][i]));
         for (int j = 0; j < N; j++)
         {
+            sigma[i][i] = 0;
+            sigma_inverse[i][i] = 0;
             V[i][j] = eigen_vectors[i][j];
             V_transpose[j][i] = eigen_vectors[i][j];
         }
+        sigma[i][i] = (sqrt(eigen_values[i][i]));
+        sigma_inverse[i][i] = 1/(sqrt(eigen_values[i][i]));
     }
 
-
+    printf("\nSigma = \n");
+    Matrix_print((float *)sigma, N, N);
     printf("\nSigma_inverse = \n");
     Matrix_print((float *)sigma_inverse, N, N);
     printf("\nV = \n");
@@ -161,19 +172,27 @@ void Matrix_print(float *A, int M, int N)
 
 void Matrix_mult(float *A, float *B, float *result, int M, int N, int K)
 {
-    float sum=0;
-    for(int i = 0; i<M ; i++)
+    // Initializing elements of matrix mult to 0.
+    for(int i = 0; i < M; ++i)
     {
-        for(int j = 0; j<N; j++)
+        for(int j = 0; j < K; ++j)
         {
-            for(int k = 0; k<K; k++)
-            {
-                sum += (*(A + i*N + k)) * (*(B + k*N + j));
-            }
-            *(result + i*N + j) = sum;
-            sum=0;
+            *(result + i*K + j)=0;
         }
     }
+
+    // Multiplying matrix a and b and storing in array mult.
+    for(int i = 0; i < M; ++i)
+    {
+        for(int j = 0; j < K; ++j)
+        {
+            for(int k = 0; k < N; ++k)
+            {
+                *(result + i*K + j) += (*(A + i*N + k)) * (*(B + k*K + j));
+            }
+        }
+    }
+
 }
 
 void Gram_Schmidt_iteration(float *A, float *Q, float *R, int N)

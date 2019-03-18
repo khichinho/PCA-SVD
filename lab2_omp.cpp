@@ -178,10 +178,10 @@ void SVD(int M, int N, float* D, float** U, float** SIGMA, float** V_T)
     Matrix_mult(M_mat, V, U_mult);
     Matrix_mult(U_mult, sigma_inverse, U_mat);
 
-    printf("\nU_mat = \n");
-    Matrix_print(U_mat);
-    printf("\nD = \n");
-    Matrix_print(M_mat);
+    // printf("\nU_mat = \n");
+    // Matrix_print(U_mat);
+    // printf("\nD = \n");
+    // Matrix_print(M_mat);
 
     // Return Matrices U
     for(int i=0; i<N; i++)
@@ -235,9 +235,9 @@ void Matrix_mult(vector<vector<float>> &A, vector<vector<float>> &B, vector<vect
     float sum=0;
     for(int i = 0; i<A.size() ; i++)
     {
-        for(int j = 0; j<B.size(); j++)
+        for(int j = 0; j<B[0].size(); j++)
         {
-            for(int k = 0; k<B.size(); k++)
+            for(int k = 0; k<A[0].size(); k++)
             {
                 sum += A[i][k] * B[k][j];
             }

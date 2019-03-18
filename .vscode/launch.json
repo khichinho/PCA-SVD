@@ -10,7 +10,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/pca",
-            "args": ["data.txt","90"],
+            "args": ["testcase_data","90"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
