@@ -83,15 +83,6 @@ void SVD(int M, int N, float* D, float** U, float** SIGMA, float** V_T)
         }
     }
 
-
-    printf("\nEigen Values = \n");
-    for(int i = 0; i < N; i++)
-    {
-        printf("%f ", eigen_values[i][i]);
-    }
-    printf("\n\nEigen Vectors = \n");
-    Matrix_print((float *)eigen_vectors, N, N);
-
     // sigma matrix
     float sigma[N][N];
     // sigma inverse matrix
@@ -106,8 +97,8 @@ void SVD(int M, int N, float* D, float** U, float** SIGMA, float** V_T)
     {
         for (int j = 0; j < N; j++)
         {
-            sigma[i][i] = 0;
-            sigma_inverse[i][i] = 0;
+            sigma[i][j] = 0.0f;
+            sigma_inverse[i][j] = 0.0f;
             V[i][j] = eigen_vectors[i][j];
             V_transpose[j][i] = eigen_vectors[i][j];
         }

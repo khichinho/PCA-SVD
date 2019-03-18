@@ -14,24 +14,6 @@ void Matrix_mult(vector<vector<float>> &A, vector<vector<float>> &B, vector<vect
 void Gram_Schmidt_process(vector<vector<float>> &A, vector<float> &eigen_values, vector<vector<float>> &eigen_vectors);
 void Gram_Schmidt_iteration(vector<vector<float>> &A, vector<vector<float>> &Q, vector<vector<float>> &R);
 
-// // Manually allocate memory as normal alloc() shows error
-void vector_memory_allocate(vector<vector<float>> &V, float M, float N){
-    for(int i = 0; i < M; i++)
-    {
-        vector<float> V_row;
-        for(int j = 0; j < N; j++)
-        {
-            V_row.push_back(0);
-        }
-        V.push_back(V_row);
-    }
-}
-void vector_memory_allocate(vector<float> &V, float M){
-    for(int i = 0; i < M; i++)
-    {
-        V.push_back(0);
-    }
-}
 
 // /*
 // 	*****************************************************
@@ -43,8 +25,7 @@ void SVD(int M, int N, float* D, float** U, float** SIGMA, float** V_T)
     // // Assign Matrix D
     printf("M = \n");
     vector<vector<float>> M_mat;
-    // M_mat.assign(M,vector<float>(N));
-    vector_memory_allocate(M_mat,M,N);
+    M_mat.assign(M,vector<float>(N));
     for(int i=0; i<M; i++)
     {
         for(int j=0; j<N; j++)
@@ -57,8 +38,7 @@ void SVD(int M, int N, float* D, float** U, float** SIGMA, float** V_T)
     // // Matrix transpose
     printf("\nM_t = \n");
     vector<vector<float>> M_transpose;
-    // M_transpose.assign(N,vector<float>(M));
-    vector_memory_allocate(M_transpose,N,M);
+    M_transpose.assign(N,vector<float>(M));
     Matrix_transpose(M_mat, M_transpose);
     Matrix_print(M_transpose);
 
@@ -67,8 +47,7 @@ void SVD(int M, int N, float* D, float** U, float** SIGMA, float** V_T)
     // // Matrix multiplication
     printf("\nM_t * M = \n");
     vector<vector<float>> Mt_M;
-    // Mt_M.assign(N,vector<float>(N));
-    vector_memory_allocate(Mt_M,N,N);
+    Mt_M.assign(N,vector<float>(N));
     Matrix_mult(M_transpose, M_mat, Mt_M);
     Matrix_print(Mt_M);
 
@@ -76,11 +55,9 @@ void SVD(int M, int N, float* D, float** U, float** SIGMA, float** V_T)
     // // Gram Schmidt begins here:
     printf("\nGram Schmidt = \n");
     vector<float> eigen_values;
-    // eigen_values.assign(N,0);
-    vector_memory_allocate(eigen_values,N);
+    eigen_values.assign(N,0);
     vector<vector<float>> eigen_vectors;
-    // eigen_vectors.assign(N,vector<float>(N,0));
-    vector_memory_allocate(eigen_vectors,N,N);
+    eigen_vectors.assign(N,vector<float>(N,0));
 
     Gram_Schmidt_process(Mt_M, eigen_values, eigen_vectors);
 
@@ -125,21 +102,17 @@ void SVD(int M, int N, float* D, float** U, float** SIGMA, float** V_T)
 
     // // sigma matrix
     vector<vector<float>> sigma;
-    // sigma.assign(N,vector<float>(N,0));
-    vector_memory_allocate(sigma,N,N);
+    sigma.assign(N,vector<float>(N,0));
     // // sigma inverse matrix
     vector<vector<float>> sigma_inverse;
-    // sigma_inverse.assign(N,vector<float>(N,0));
-    vector_memory_allocate(sigma_inverse,N,N);
+    sigma_inverse.assign(N,vector<float>(N,0));
 
     // // V matrix
     vector<vector<float>> V;
-    // V.assign(N,vector<float>(N,0));
-    vector_memory_allocate(V,N,N);
+    V.assign(N,vector<float>(N,0));
     // // V Transpose matrix
     vector<vector<float>> V_transpose;
-    // V_transpose.assign(N,vector<float>(N,0));
-    vector_memory_allocate(V_transpose,N,N);
+    V_transpose.assign(N,vector<float>(N,0));
 
     for(int i=0; i<N; i++)
     {
@@ -166,14 +139,11 @@ void SVD(int M, int N, float* D, float** U, float** SIGMA, float** V_T)
 
     // // U matrix
     vector<vector<float>> U_mat;
-    // U_mat.assign(M,vector<float>(N,0));
-    vector_memory_allocate(U_mat,M,N);
+    U_mat.assign(M,vector<float>(N,0));
 
     // U_mult matrix
     vector<vector<float>> U_mult;
-    // U_mult.assign(M,vector<float>(N,0));
-    vector_memory_allocate(U_mult,M,N);
-
+    U_mult.assign(M,vector<float>(N,0));
 
     Matrix_mult(M_mat, V, U_mult);
     Matrix_mult(U_mult, sigma_inverse, U_mat);
@@ -321,8 +291,7 @@ void Gram_Schmidt_process(vector<vector<float>> &A, vector<float> &eigen_values,
     float new_error;
 
     vector<vector<float>> D_old;
-    // D_old.assign(A.size(),vector<float>(A[0].size()));
-    vector_memory_allocate(D_old,A.size(),A[0].size());
+    D_old.assign(A.size(),vector<float>(A[0].size()));
 
     for(int j = 0; j < A.size(); j++)
     {
@@ -333,28 +302,23 @@ void Gram_Schmidt_process(vector<vector<float>> &A, vector<float> &eigen_values,
     }
 
     vector<vector<float>> D_new;
-    // D_new.assign(A.size(),vector<float>(A[0].size()));
-    vector_memory_allocate(D_new,A.size(),A[0].size());
+    D_new.assign(A.size(),vector<float>(A[0].size()));
 
     vector<vector<float>> Q;
-    // Q.assign(A.size(),vector<float>(A[0].size()));
-    vector_memory_allocate(Q,A.size(),A[0].size());
+    Q.assign(A.size(),vector<float>(A[0].size()));
 
     vector<vector<float>> R;
-    // R.assign(A[0].size(),vector<float>(A[0].size()));
-    vector_memory_allocate(R,A[0].size(),A[0].size());
+    R.assign(A[0].size(),vector<float>(A[0].size()));
 
     vector<vector<float>> E;
-    // E.assign(A[0].size(),vector<float>(A[0].size(),0));
-    vector_memory_allocate(E,A[0].size(),A[0].size());
+    E.assign(A[0].size(),vector<float>(A[0].size(),0));
     for(int j = 0; j < A.size(); j++)
     {
         E[j][j] = 1.0f;
     }
 
     vector<vector<float>> E_copy;
-    // E_copy.assign(A[0].size(),vector<float>(A[0].size(),0));
-    vector_memory_allocate(E_copy,A.size(),A[0].size());
+    E_copy.assign(A[0].size(),vector<float>(A[0].size(),0));
 
     for(int i = 0; i < max_iterations; i++)
     {
