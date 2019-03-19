@@ -102,10 +102,10 @@ void SVD(int M, int N, float* D, float** U, float** SIGMA, float** V_T)
 
     // // sigma matrix
     vector<vector<float>> sigma;
-    sigma.assign(N,vector<float>(N,0));
+    sigma.assign(N,vector<float>(M,0));
     // // sigma inverse matrix
     vector<vector<float>> sigma_inverse;
-    sigma_inverse.assign(N,vector<float>(N,0));
+    sigma_inverse.assign(N,vector<float>(M,0));
 
     // // V matrix
     vector<vector<float>> V;
@@ -134,44 +134,47 @@ void SVD(int M, int N, float* D, float** U, float** SIGMA, float** V_T)
     printf("\nV = \n");
     Matrix_print(V);
 
+
+    // Return Matrices SIGMA, U
+    for(int i=0; i<N; i++)
+    {
+        // TODO: should have returned sigma[i][i]
+        *(SIGMA[0] + i) = sigma[i][i];
+        for(int j=0; j<N; j++)
+        {
+            // should have returned U_mat[i][j]
+            *( *(U) + i*N + j) = V.at(i).at(j);
+        }
+    }
+
     printf("\nV_t = \n");
     Matrix_print(V_transpose);
 
-    // // U matrix
+    // U matrix
     vector<vector<float>> U_mat;
     U_mat.assign(M,vector<float>(N,0));
 
     // U_mult matrix
     vector<vector<float>> U_mult;
-    U_mult.assign(M,vector<float>(N,0));
+    U_mult.assign(M,vector<float>(M,0));
 
     Matrix_mult(M_mat, V, U_mult);
     Matrix_mult(U_mult, sigma_inverse, U_mat);
+
+    // Return Matrices V_T
+    for(int i=0; i<M; i++)
+    {
+        for(int j=0; j<M; j++)
+        {
+            // should have returned V_transpose[i][j]
+            *( *(V_T) + i*M + j) = U_mat[j][i];
+        }
+    }
 
     // printf("\nU_mat = \n");
     // Matrix_print(U_mat);
     // printf("\nD = \n");
     // Matrix_print(M_mat);
-
-    // Return Matrices U
-    for(int i=0; i<N; i++)
-    {
-        for(int j=0; j<N; j++)
-        {
-            *(*(U)+ i*N + j) = U_mat[i][j];
-        }
-    }
-
-
-    // Return Matrices SIGMA, V_T
-    for(int i=0; i<N; i++)
-    {
-        for(int j=0; j<N; j++)
-        {
-            *(SIGMA[0] + i*N + j) = sigma[i][j];
-            *(V_T[0] + i*N + j) = V_transpose[i][j];
-        }
-    }
 
     printf("\nSuccess !\n");
 }
@@ -202,17 +205,22 @@ void Matrix_transpose(vector<vector<float>> &M, vector<vector<float>> &M_t)
 
 void Matrix_mult(vector<vector<float>> &A, vector<vector<float>> &B, vector<vector<float>> &result)
 {
-    float sum=0;
+    for(int i = 0; i < A.size(); ++i)
+    {
+        for(int j = 0; j < B[0].size(); ++j)
+        {
+            result[i][j]=0;
+        }
+    }
+
     for(int i = 0; i<A.size() ; i++)
     {
         for(int j = 0; j<B[0].size(); j++)
         {
             for(int k = 0; k<A[0].size(); k++)
             {
-                sum += A[i][k] * B[k][j];
+                result[i][j] += A[i][k] * B[k][j];
             }
-            result[i][j] = sum;
-            sum=0;
         }
     }
 }
@@ -381,147 +389,5 @@ void Gram_Schmidt_process(vector<vector<float>> &A, vector<float> &eigen_values,
 // */
 void PCA(int retention, int M, int N, float* D, float* U, float* SIGMA, float** D_HAT, int *K)
 {
-    // // Assign Matrix D and Matrix transpose
-    vector<vector<float>> M_mat;
-    M_mat.assign(M,vector<float>(N));
-    vector<vector<float>> M_transpose;
-    M_transpose.assign(N,vector<float>(M));
-    for(int i=0; i<M; i++)
-    {
-        for(int j=0; j<N; j++)
-        {
-            M_mat[i][j] = D[i*N + j];
-            M_transpose[j][i] = D[i*N + j];
-        }
-    }
-
-    printf("M = \n");
-    Matrix_print(M_mat);
-    printf("\nM_t = \n");
-    Matrix_print(M_transpose);
-
-
-    // // Gram Schmidt begins here:
-    printf("\nGram Schmidt = \n");
-    vector<float> eigen_values;
-    eigen_values.assign(N,0);
-    vector<vector<float>> eigen_vectors;
-    eigen_vectors.assign(N,vector<float>(N,0));
-
-    Gram_Schmidt_process(Mt_M, eigen_values, eigen_vectors);
-
-    printf("\nEigen Values = \n");
-    for(int i = 0; i < N; i++)
-    {
-        printf("%f ", eigen_values[i]);
-    }
-    printf("\n\nEigen Vectors = \n");
-    Matrix_print(eigen_vectors);
-
-    // absolute conversion of eigen values
-    for (int i = 0; i < eigen_values.size(); ++i) 
-    {
-        for (int j = i + 1; j < eigen_values.size(); ++j)
-        {
-            eigen_values[i] =  fabs(eigen_values[i]);
-        }
-    }
-
-
-    // // arrange Eigen Values/Vectors in descending order
-    for (int i = 0; i < eigen_values.size(); ++i) 
-    {
-        for (int j = i + 1; j < eigen_values.size(); ++j)
-        {
-            if (eigen_values[i] < eigen_values[j] )
-            {
-                float a =  eigen_values[i];
-                eigen_values[i] = eigen_values[j];
-                eigen_values[j] = a;
-
-                for(int k = 0; k < N; k++)
-                {
-                    a =  eigen_vectors[k][i];
-                    eigen_vectors[k][i] = eigen_vectors[k][j];
-                    eigen_vectors[k][j] = a;
-                }
-            }
-        }
-    }
-
-    // // sigma matrix
-    vector<vector<float>> sigma;
-    sigma.assign(N,vector<float>(N,0));
-    // // sigma inverse matrix
-    vector<vector<float>> sigma_inverse;
-    sigma_inverse.assign(N,vector<float>(N,0));
-
-    // // V matrix
-    vector<vector<float>> V;
-    V.assign(N,vector<float>(N,0));
-    // // V Transpose matrix
-    vector<vector<float>> V_transpose;
-    V_transpose.assign(N,vector<float>(N,0));
-
-    for(int i=0; i<N; i++)
-    {
-        sigma[i][i] = (sqrt(eigen_values[i]));
-        sigma_inverse[i][i] = 1/sigma[i][i];
-        for (int j = 0; j < N; j++)
-        {
-            V[i][j] = eigen_vectors[i][j];
-            V_transpose[j][i] = eigen_vectors[i][j];
-        }
-    }
-
-    printf("\nSigma = \n");
-    Matrix_print(sigma);
-
-    printf("\nSigma_inverse = \n");
-    Matrix_print(sigma_inverse);
-
-    printf("\nV = \n");
-    Matrix_print(V);
-
-    printf("\nV_t = \n");
-    Matrix_print(V_transpose);
-
-    // // U matrix
-    vector<vector<float>> U_mat;
-    U_mat.assign(M,vector<float>(N,0));
-
-    // U_mult matrix
-    vector<vector<float>> U_mult;
-    U_mult.assign(M,vector<float>(N,0));
-
-    Matrix_mult(M_mat, V, U_mult);
-    Matrix_mult(U_mult, sigma_inverse, U_mat);
-
-    // printf("\nU_mat = \n");
-    // Matrix_print(U_mat);
-    // printf("\nD = \n");
-    // Matrix_print(M_mat);
-
-    // Return Matrices U
-    for(int i=0; i<N; i++)
-    {
-        for(int j=0; j<N; j++)
-        {
-            *(*(U)+ i*N + j) = U_mat[i][j];
-        }
-    }
-
-
-    // Return Matrices SIGMA, V_T
-    for(int i=0; i<N; i++)
-    {
-        for(int j=0; j<N; j++)
-        {
-            *(SIGMA[0] + i*N + j) = sigma[i][j];
-            *(V_T[0] + i*N + j) = V_transpose[i][j];
-        }
-    }
-
-    printf("\nSuccess !\n");
 
 }

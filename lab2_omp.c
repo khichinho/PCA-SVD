@@ -343,7 +343,7 @@ void Gram_Schmidt_process(float *A, float *eigen_values, float *eigen_vectors, i
         Matrix_print(E, N, N);
 
         printf("\nerror = %f\n", (fabs(new_error-old_error)) );
-        if((fabs(new_error-old_error) <= 0) || (i == max_iterations - 1) )
+        if((fabs(new_error-old_error) <= 0.0000001) || (i == max_iterations - 1) )
         // if(i == max_iterations - 1)
         {
             for(int j = 0; j < N; j++)
