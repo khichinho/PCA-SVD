@@ -75,4 +75,5 @@ int main(int argc, char const *argv[])
 	write_result(M, N, D, U, SIGMA, V_T, K, D_HAT, computation_time);
 
 	return 0;
+
 }

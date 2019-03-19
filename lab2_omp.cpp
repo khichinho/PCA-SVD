@@ -24,8 +24,8 @@ static float D_HAT_ARR[10000000];
 void SVD(int M, int N, float* D, float** U, float** SIGMA, float** V_T)
 {
     // // Assign Matrix D
-    printf("M = \n");
-    static vector<vector<float>> M_mat;
+    // printf("M = \n");
+    vector<vector<float>> M_mat;
     M_mat.assign(M,vector<float>(N));
     for(int i=0; i<M; i++)
     {
@@ -34,27 +34,27 @@ void SVD(int M, int N, float* D, float** U, float** SIGMA, float** V_T)
             M_mat[i][j] = D[i*N + j];
         }
     }
-    Matrix_print(M_mat);
+    // Matrix_print(M_mat);
 
     // // Matrix transpose
-    printf("\nM_t = \n");
+    // printf("\nM_t = \n");
     static vector<vector<float>> M_transpose;
     M_transpose.assign(N,vector<float>(M));
     Matrix_transpose(M_mat, M_transpose);
-    Matrix_print(M_transpose);
+    // Matrix_print(M_transpose);
 
 
 
     // // Matrix multiplication
-    printf("\nM_t * M = \n");
+    // printf("\nM_t * M = \n");
     static vector<vector<float>> Mt_M;
     Mt_M.assign(N,vector<float>(N));
     Matrix_mult(M_transpose, M_mat, Mt_M);
-    Matrix_print(Mt_M);
+    // Matrix_print(Mt_M);
 
 
     // // Gram Schmidt begins here:
-    printf("\nGram Schmidt = \n");
+    // printf("\nGram Schmidt = \n");
     static vector<float> eigen_values;
     eigen_values.assign(N,0);
     static vector<vector<float>> eigen_vectors;
@@ -62,13 +62,13 @@ void SVD(int M, int N, float* D, float** U, float** SIGMA, float** V_T)
 
     Gram_Schmidt_process(Mt_M, eigen_values, eigen_vectors);
 
-    printf("\nEigen Values = \n");
-    for(int i = 0; i < N; i++)
-    {
-        printf("%f ", eigen_values[i]);
-    }
-    printf("\n\nEigen Vectors = \n");
-    Matrix_print(eigen_vectors);
+    // printf("\nEigen Values = \n");
+    // for(int i = 0; i < N; i++)
+    // {
+    //     printf("%f ", eigen_values[i]);
+    // }
+    // printf("\n\nEigen Vectors = \n");
+    // Matrix_print(eigen_vectors);
 
     // absolute conversion of eigen values
     for (int i = 0; i < eigen_values.size(); ++i) 
@@ -126,14 +126,14 @@ void SVD(int M, int N, float* D, float** U, float** SIGMA, float** V_T)
         }
     }
 
-    printf("\nSigma = \n");
-    Matrix_print(sigma);
+    // printf("\nSigma = \n");
+    // Matrix_print(sigma);
 
-    printf("\nSigma_inverse = \n");
-    Matrix_print(sigma_inverse);
+    // printf("\nSigma_inverse = \n");
+    // Matrix_print(sigma_inverse);
 
-    printf("\nV = \n");
-    Matrix_print(V);
+    // printf("\nV = \n");
+    // Matrix_print(V);
 
 
     // Return Matrices SIGMA, U
@@ -148,8 +148,8 @@ void SVD(int M, int N, float* D, float** U, float** SIGMA, float** V_T)
         }
     }
 
-    printf("\nV_t = \n");
-    Matrix_print(V_transpose);
+    // printf("\nV_t = \n");
+    // Matrix_print(V_transpose);
 
     // U matrix
     static vector<vector<float>> U_mat;
@@ -177,7 +177,14 @@ void SVD(int M, int N, float* D, float** U, float** SIGMA, float** V_T)
     // printf("\nD = \n");
     // Matrix_print(M_mat);
 
-    printf("\nSuccess !\n");
+    // printf("\nSuccess !\n");
+
+    // clear vectors
+    M_mat.clear(); 
+    M_transpose.clear();
+    Mt_M.clear(); eigen_values.clear(); eigen_vectors.clear(); sigma.clear(); sigma_inverse.clear(); V.clear(); V_transpose.clear(); U_mat.clear(); U_mult.clear();
+
+
 }
 
 void Matrix_print(vector<vector<float>> &M)
@@ -331,12 +338,12 @@ void Gram_Schmidt_process(vector<vector<float>> &A, vector<float> &eigen_values,
 
     for(int i = 0; i < max_iterations; i++)
     {
-        printf("\niteration= %d", i);
+        // printf("\niteration= %d", i);
         Gram_Schmidt_iteration(D_old, Q, R);
 
         Matrix_mult(R, Q, D_new);
-        printf("\nD_new = \n");
-        Matrix_print(D_new);
+        // printf("\nD_new = \n");
+        // Matrix_print(D_new);
 
         for(int j = 0; j < A.size(); j++)
         {
@@ -351,10 +358,10 @@ void Gram_Schmidt_process(vector<vector<float>> &A, vector<float> &eigen_values,
 
         Matrix_mult(E_copy,Q,E);
 
-        printf("\nE = \n");
-        Matrix_print(E);
+        // printf("\nE = \n");
+        // Matrix_print(E);
 
-        printf("\nerror = %f\n", fabs(new_error-old_error));
+        // printf("\nerror = %f\n", fabs(new_error-old_error));
         if(fabs(new_error-old_error) < 0.000001)
         // if(i == max_iterations - 1)
         {
@@ -372,6 +379,9 @@ void Gram_Schmidt_process(vector<vector<float>> &A, vector<float> &eigen_values,
         old_error = new_error;
 
     }
+
+    D_old.clear(); D_new.clear(); Q.clear(); R.clear(); E.clear(); E_copy.clear();
+
 }
 
 
@@ -394,15 +404,15 @@ void PCA(int retention, int M, int N, float* D, float* U, float* SIGMA, float** 
     float my_retention = 0;
     float eigen_value_sum = 0;
 
-    printf("\nSigma = \n");
+    // printf("\nSigma = \n");
     for(int i=0; i<N; i++)
     {
-        printf("%f ", SIGMA[i]);
+        // printf("%f ", SIGMA[i]);
         eigen_value_sum += SIGMA[i];
     }
 
     // D mat
-    printf("\n\nD = \n");
+    // printf("\n\nD = \n");
     static vector<vector<float>> D_mat;
     D_mat.assign(M,vector<float>(N));
     for(int i=0; i<M; i++)
@@ -412,7 +422,7 @@ void PCA(int retention, int M, int N, float* D, float* U, float* SIGMA, float** 
             D_mat[i][j] = D[i*N + j];
         }
     }
-    Matrix_print(D_mat);
+    // Matrix_print(D_mat);
 
     for(int i=0; i<N; i++){
         my_retention += SIGMA[i]/eigen_value_sum;
@@ -422,7 +432,7 @@ void PCA(int retention, int M, int N, float* D, float* U, float* SIGMA, float** 
             break;
         }
     }
-    printf("\nK = %d\n", *K);
+    // printf("\nK = %d\n", *K);
 
     // U matrix
     static vector<vector<float>> W_mat;
@@ -438,7 +448,7 @@ void PCA(int retention, int M, int N, float* D, float* U, float* SIGMA, float** 
 
     // static float* D_HAT_ARR = (float*)malloc(sizeof(float) * N*(*K));
 
-    printf("\nD_HAT = \n");
+    // printf("\nD_HAT = \n");
     for(int i=0; i<M; ++i)
     {
         for(int j=0; j < (*K); ++j)
@@ -451,11 +461,13 @@ void PCA(int retention, int M, int N, float* D, float* U, float* SIGMA, float** 
                 D_HAT_ARR[i*N + j] += D_mat[i][k] * W_mat[k][j];
             }
             // printf("%f ", *(D_HAT_ARR + i*N + j));
-            printf("%f ", D_HAT_ARR[i*N + j]);
+            // printf("%f ", D_HAT_ARR[i*N + j]);
         }
-            printf("\n");
+            // printf("\n");
     }
 
     *D_HAT = D_HAT_ARR;
 
+    // clear vectors
+    D_mat.clear(); W_mat.clear();
 }
