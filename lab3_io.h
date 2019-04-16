@@ -1,5 +1,5 @@
-#ifndef LAB2_IO_H
-#define LAB2_IO_H
+#ifndef LAB3_IO_H
+#define LAB3_IO_H
 
 #include <stdio.h>
 #include <malloc.h>
@@ -13,7 +13,7 @@
         | D[0][0] | D[0][1] | ... | D[0][N-1] | D[1][0] | ... | D[1][N-1] | ... | D[M-1][N-1] |
         --------------------------------------------------------------------------------------
 */
-void read_matrix (const char* input_filename, int* M, int *N, float** D);
+void read_matrix (const char* input_filename, int* M, int *N, double** D);
 
 /*
 check correctess of Singular Vector Decomposition
@@ -49,12 +49,14 @@ Arguments:
 
 void write_result (int M, 
 		int N, 
-		float* D, 
-		float* U, 
-		float* SIGMA, 
-		float* V_T,
+		double* D, 
+		double* U, 
+		double* SIGMA, 
+		double* V_T,
+        int SIGMAm, 
+        int SIGMAn, 
 		int K, 
-		float* D_HAT,
+		double* D_HAT,
 		double computation_time);
 
 #endif

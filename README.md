@@ -1,26 +1,25 @@
-# PCA-SVD
-
-Problem Statement: Implement Principal Component Analysis with Singular Vector Decomposition
+# col380_lab3_suite
+Problem Statement: Implement Principal Component Analysis with Singular Vector Decomposition in CUDA
 
 ## Directories and files
 `testcase/`: contains python script `gen_testcase.py` for sample testcase generation  
-`lab2_io.h` and `lab2_io.c`: functions to read matrix from file and check the correctness of the result  
-`main_omp.c`: function `main()`  
-`lab2_omp.h`: header file for the functions to be implemented  
-`lab2_omp.c`: implement the functions in this file  
+`lab3_io.h` and `lab3_io.cu`: functions to read matrix from file and check the correctness of the result  
+`main_cuda.cu`: function `main()`  
+`lab3_cuda.h`: header file for the functions to be implemented  
+`lab3_cuda.cu`: implement the function in this file  
 Refer to respective files for furthur details.  
 **Do not change the directory structure and prototype of functions.**
 
 ## Building and Executing
 ```
-g++ -fopenmp -lm lab2_io.c lab2_omp.c main_omp.c -o pca
+nvcc -lm main_cuda.cu lab3_cuda.cu lab3_io.cu -o pca
 ```
 #### Command Line Arguments
 The program takes two command line arguments:
 - arg1: input filename (consist M, N and D)  
 - arg2: retention (percentage of information to be retained by PCA) 
 
-Note that the retention percentage is integer.  Please refer to `main_omp.c` for more details.  
+Note that the retention percentage is integer.  Please refer to `main_cuda.cu` for more details.  
 To run the program:
 ```
 ./pca <input filename> <retention>
@@ -46,16 +45,18 @@ The first line of the input file contains `M` followed by `N`. The second line c
 
 #### Output Specification
 Your program should perform SVD and PCA on the given input and store the results in the variables given in the program. We will check the correctness by calling the functions from the program. You should compute following matrices and values:  
-- U : N x N real matrix (to be computed by SVD)
-- SIGMA : N x M diagonal matrix of positive real numbers ( to be computed by SVD)
-- V_T : M x M real matrix (to be computed by SVD)
+- U : N x N (or M x M, read note in `lab3_cuda.h`) real matrix (to be computed by SVD)
+- SIGMA : N x M (or M x M, read note in `lab3_cuda.h`) diagonal matrix of positive real numbers ( to be computed by SVD)
+- V_T : M x M (or M x M, read note in `lab3_cuda.h`) real matrix (to be computed by SVD)
+- SIGMAm : #rows in SIGMA, same as rows in matrix used for SVD (to be computed)
+- SIGMAn : #columns in SIGMA, same as rows in matrix used for SVD (to be computed)
 - K : number of columns (features) in reduced matrix D_HAT
 - D_HAT : reduced matrix (to be computed by PCA)
 
-Refer to `lab2_omp.h` for more details. **Your program should not output anything on `stdout`.**  
+Refer to `lab3_cuda.h` for more details. **Your program should not output anything on `stdout`.**  
 
 ## Submission Instructions
-- You are supposed to submit only one file named `lab2_omp.c/cpp`. Please make sure all the functions you have used are in this file.
+- You are supposed to submit only one file named `lab3_cuda.cu`. Please make sure all the functions you have used are in this file.
 - Do not submit other files
 - Your code should build and execute as per the instructions given above. Please make sure that your code doesn't need any Makefile.
 - Your program should not output anything in `stdout`.

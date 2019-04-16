@@ -1,5 +1,5 @@
-#include "lab2_io.h"
-#include "lab2_omp.h"
+#include "lab3_io.h"
+#include "lab3_cuda.h"
 
 #include <stdlib.h>
 #include <omp.h>
@@ -25,19 +25,20 @@ int main(int argc, char const *argv[])
 	//---------------------------------------------------------------------
 	int M;			//no of rows (samples) in input matrix D (input)
 	int N;			//no of columns (features) in input matrix D (input)
-	float* D;		//1D array of M x N matrix to be reduced (input)
-	float* U;		//1D array of N x N matrix U (to be computed by SVD)
-	float* SIGMA;	//1D array of N x M diagonal matrix SIGMA (to be computed by SVD)
-	float* V_T;		//1D array of M x M matrix V_T (to be computed by SVD)
+	double* D;		//1D array of M x N matrix to be reduced (input)
+	double* U;		//1D array of N x N (or M x M) matrix U (to be computed by SVD)
+	double* SIGMA;	//1D array of N x M (or M x N) diagonal matrix SIGMA (to be computed by SVD)
+	double* V_T;	//1D array of M x M (or N x N) matrix V_T (to be computed by SVD)
+	int SIGMAm;		// #rows in SIGMA, read note in lab3_cuda.h (to be computed by SVD)
+	int SIGMAn;		// #columns in SIGMA, read note in lab3_cuda.h (to be computed by SVD)
 	int K;			//no of coulmns (features) in reduced matrix D_HAT (to be computed by PCA)
-	float *D_HAT;	//1D array of M x K reduced matrix (to be computed by PCA)
+	double *D_HAT;	//1D array of M x K reduced matrix (to be computed by PCA)
 	int retention;	//percentage of information to be retained by PCA (command line input)
 	//---------------------------------------------------------------------
 
 	retention = atoi(argv[2]);	//retention = 90 means 90% of information should be retained
 
-	float start_time, end_time;
-	double computation_time;
+	float computation_time;
 
 	/*
 		-- Pre-defined function --
@@ -50,30 +51,29 @@ int main(int argc, char const *argv[])
 	*/
 	read_matrix (argv[1], &M, &N, &D);
 
-	U = (float*) malloc(sizeof(float) * N*N);
-	SIGMA = (float*) malloc(sizeof(float) * N);
-	V_T = (float*) malloc(sizeof(float) * M*M);
+	cudaEvent_t start, stop;
+	cudaEventCreate(&start);
+	cudaEventCreate(&stop);
 
-	start_time = omp_get_wtime();
+	cudaEventRecord(start);
 	
 	// /*
 	// 	*****************************************************
-	// 		TODO -- You must implement these two function
+	// 		TODO -- You must implement this function
 	// 	*****************************************************
 	// */
-	SVD(M, N, D, &U, &SIGMA, &V_T);
-	PCA(retention, M, N, D, U, SIGMA, &D_HAT, &K);
+	SVD_and_PCA(M, N, D, &U, &SIGMA, &V_T, &SIGMAm, &SIGMAn, &D_HAT, &K, retention);
 
-	end_time = omp_get_wtime();
-	computation_time = ((double) (end_time - start_time));
+	cudaEventRecord(stop);
+	cudaEventSynchronize(stop);
+	cudaEventElapsedTime(&computation_time, start, stop);
 	
 	/*
 		--Pre-defined functions --
 		checks for correctness of results computed by SVD and PCA
 		and outputs the results
 	*/
-	write_result(M, N, D, U, SIGMA, V_T, K, D_HAT, computation_time);
+	write_result(M, N, D, U, SIGMA, V_T, SIGMAm, SIGMAn, K, D_HAT, computation_time);
 
 	return 0;
-
 }

@@ -18,14 +18,23 @@
 
 
 from random import uniform
+from sklearn.preprocessing import StandardScaler
 
-M = 3           # number of rows (samples) in input matrix D
-N = 2             # number of columns (features) in input matrix
+M = 1000            # number of rows (samples) in input matrix D
+N = 300             # number of columns (features) in input matrix
 lrange = -100000    # lrange <= element of matrix
 urange = 100000     # element of matrix <= urange
 
-# number of elements in M x N matrix
-num_elements = M * N
+# generate the matrix
+D = []
+for i in range(M):
+    temp = []
+    for j in range(N):
+        temp.append(uniform(lrange, urange))
+    D.append(temp)
+
+# standardize
+X_std = StandardScaler().fit_transform(D)
 
 filename = 'testcase_' + str(M) + '_' + str(N)     #output filename
 file = open(filename, 'w')
@@ -34,7 +43,8 @@ file = open(filename, 'w')
 file.write(str(M) + ' ' +str(N) + '\n')
 
 # write space separated matrix elements
-for i in range(num_elements):
-    file.write(str(uniform(lrange, urange)) + ' ')
+for i in range(M):
+    for j in range(N):
+        file.write('%.7f ' %(X_std[i][j]))
 
 file.close()
