@@ -19,12 +19,23 @@ __global__ void vecAdd(double *a, double *b, double *c, int n)
         
 }
 
+__global__ void sum(double* a, double* b, double* c){
+    int id = blockIdx.x*blockDim.x + threadIdx.x;
+    c[id] = a[id]+b[id];
+}
+__global__ void start(double* a, double* b,int n){
+    int id = blockIdx.x*blockDim.x + threadIdx.x;
+    // c[id] = a[id]+b[id];
+    a[id] = id;
+    b[id] = n-id;
+}
+
  
 int main( int argc, char* argv[] )
 {
     // Size of vectors
     int n = 1000;
-    int m = 4;
+    // int m = 4;
     
     // Host input vectors
     double *h_a;
@@ -41,7 +52,8 @@ int main( int argc, char* argv[] )
     double *d_c;
  
     // Size, in bytes, of each vector
-    size_t bytes = (n*m)*sizeof(double);
+    size_t bytes = (n*n)*sizeof(double);
+    
  
     // Allocate memory for each vector on host
     h_a = (double*)malloc(bytes);
@@ -57,40 +69,45 @@ int main( int argc, char* argv[] )
     int i;
     // Initialize vectors on host
     for( i = 0; i < n; i++ ) {
-        h_a[i] = sin(i)*sin(i);
-		h_b[i] = cos(i)*cos(i);
-	}
+        h_a[i] = i;
+		h_b[i] = n-i;
+    }
+    // start<<<n,n>>>(d_a,d_b,n);
 	// for(i=0;i<n/100;i++){
 	// 	printf("h_a[ %d ]-> %lf\n",i,h_a[i*100]);
 	// 	printf("h_b[ %d ]-> %lf\n",i,h_b[i*100]);
 	// }
  
     // Copy host vectors to device
-    cudaMemcpy( d_a, h_a, bytes, cudaMemcpyHostToDevice);
-    cudaMemcpy( d_b, h_b, bytes, cudaMemcpyHostToDevice);
+    // cudaMemcpy( d_a, h_a, bytes, cudaMemcpyHostToDevice);
+    // cudaMemcpy( d_b, h_b, bytes, cudaMemcpyHostToDevice);
  
-    int blockSize, gridSize;
+    // int blockSize, gridSize;
  
     // Number of threads in each thread block
-    blockSize = 1024;
+    // blockSize = 1024;
  
     // Number of thread blocks in grid
-    gridSize = (int)ceil((float)n/blockSize);
+    // gridSize = (int)ceil((float)n/blockSize);
  
     // Execute the kernel
-    vecAdd<<<gridSize, blockSize>>>(d_a, d_b, d_c, n);
- 
+    // vecAdd<<<gridSize, blockSize>>>(d_a, d_b, d_c, n);
+    // sum<<<n, n>>> (d_a, d_b, d_c);
     // Copy array back to host
-    cudaMemcpy( h_c, d_c, bytes, cudaMemcpyDeviceToHost );
+    // cudaMemcpy( h_c, d_c, bytes, cudaMemcpyDeviceToHost );
  
     // Sum up vector c and print result divided by n, this should equal 1 within error
-	double sum = 0;
+	// double sum = 0;
     for(i=0; i<n; i++){
-        sum += h_c[i];
-        printf("final hc: %f\n", h_c[i]);
+        // sum += h_c[i];
+        for(int j=0; j<n; j++){
+            h_c[i*n+j] = h_a[i*n+j] + h_b[i*n+j];
+            // printf("final hc: %f\n", h_c[i]);
+        }
+        
     }
         
-    printf("final result: %f\n", sum/n);
+    // printf("final result: %f\n", sum/n);
  
     // Release device memory
     cudaFree(d_a);
